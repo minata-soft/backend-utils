@@ -1,4 +1,4 @@
-package backendutils
+package backend_utils
 
 import (
 	"log"
@@ -14,11 +14,11 @@ const (
 )
 
 func DebugMessage(message string, err ...error) {
-	pc, _, _, _ := runtime.Caller(1)
+	pc, file, line, _ := runtime.Caller(1)
 	functionName := runtime.FuncForPC(pc).Name()
 
-	log.Printf("%s== DEBUG ==%s --FUNCTION--: %s --MESSAGE-- : %s%s\n",
-		blueColor, resetColor, functionName, message, resetColor)
+	log.Printf(" --FILE--:%s %s== DEBUG ==%s --FUNCTION--: %s --LINE--: %v --MESSAGE-- : %s%s\n",
+		file, blueColor, resetColor, functionName, line, message, resetColor)
 	if len(err) > 0 {
 		log.Printf("%s==> err: %v%s\n", yellowColor, err[0], resetColor)
 	}
