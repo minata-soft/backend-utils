@@ -1,8 +1,8 @@
 package backend_utils
 
 import (
+	"fmt"
 	"log"
-	"reflect"
 	"runtime"
 )
 
@@ -13,39 +13,34 @@ const (
 	resetColor  = "\033[0m"
 )
 
-func DebugMessage(message string, err ...error) {
+type printer struct{}
+
+var Print printer
+
+func (printer) Debug(message string, a ...interface{}) {
 	pc, file, line, _ := runtime.Caller(1)
 	functionName := runtime.FuncForPC(pc).Name()
+	additional_info := fmt.Sprintf(message, a...)
 
 	log.Printf(" --FILE--:%s %s== DEBUG ==%s --FUNCTION--: %s --LINE--: %v --MESSAGE-- : %s%s\n",
-		file, blueColor, resetColor, functionName, line, message, resetColor)
-	if len(err) > 0 {
-		log.Printf("%s==> err: %v%s\n", yellowColor, err[0], resetColor)
-	}
+		file, blueColor, resetColor, functionName, line, additional_info, resetColor)
 }
 
-func ErrorMessage(message string, err ...error) {
+func (printer) Error(message string, a ...interface{}) {
 	pc, _, _, _ := runtime.Caller(1)
 	functionName := runtime.FuncForPC(pc).Name()
+	additional_info := fmt.Sprintf(message, a...)
 
-	log.Printf("%s== ERROR ==%s --FUNCTION--: %s --MESSAGE-- : %s%s\n",
-		redColor, resetColor, functionName, message, resetColor)
-	if len(err) > 0 {
-		log.Printf("%s==> err: %v%s\n", yellowColor, err[0], resetColor)
-	}
-}
-
-func PrintError(fn interface{}, message string, err ...error) {
-	var (
-		pc               = reflect.ValueOf(fn).Pointer()
-		functionName     = runtime.FuncForPC(pc).Name()
-		_, file, line, _ = runtime.Caller(1)
+	log.Printf(
+		"%s== ERROR ==%s --FUNCTION--: %s --MESSAGE-- : %s%s\n",
+		redColor, resetColor, functionName, additional_info, resetColor,
 	)
+}
+func (printer) Info(message string, a ...interface{}) {
+	pc, _, _, _ := runtime.Caller(1)
+	functionName := runtime.FuncForPC(pc).Name()
+	additional_info := fmt.Sprintf(message, a...)
 
-	log.Printf("%s== ERROR ==%s --FILE-- %s:%d --FUNCTION--: %s --MESSAGE-- : %s%s\n",
-		redColor, resetColor, file, line, functionName, message, resetColor)
-
-	if len(err) > 0 {
-		log.Printf("%s==> err:%v %s\n", redColor, err, resetColor)
-	}
+	log.Printf("%s== INFO ==%s --FUNCTION--: %s --MESSAGE-- : %s%s\n",
+		yellowColor, resetColor, functionName, additional_info, resetColor)
 }
