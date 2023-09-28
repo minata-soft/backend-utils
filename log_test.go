@@ -9,17 +9,17 @@ import (
 func TestDebugMessage(t *testing.T) {
 	a := "test"
 	b := "deux"
-	backend_utils.Print.Debug("test de ma function %s %s", a, b)
+	backend_utils.Debug.Debug("test de ma function %s %s", a, b)
 }
 
 func TestErrorMessage(t *testing.T) {
 	a := "test"
 	b := "deux"
-	backend_utils.Print.Error("test de ma function %s %s", a, b)
+	backend_utils.Debug.Error("test de ma function %s %s", a, b)
 }
 
 func TestInfo(t *testing.T) {
 	a := "test"
 	b := "deux"
-	backend_utils.Print.Info("test de ma function %s %s", a, b)
+	backend_utils.Debug.Info("test de ma function %s %s", a, b)
 }

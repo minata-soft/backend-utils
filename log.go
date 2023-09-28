@@ -15,7 +15,7 @@ const (
 
 type printer struct{}
 
-var Print printer
+var Debug printer
 
 func (printer) Debug(message string, a ...interface{}) {
 	pc, file, line, _ := runtime.Caller(1)
