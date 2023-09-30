@@ -27,20 +27,20 @@ func (printer) Debug(message string, a ...interface{}) {
 }
 
 func (printer) Error(message string, a ...interface{}) {
-	pc, _, _, _ := runtime.Caller(1)
+	pc, file, line, _ := runtime.Caller(1)
 	functionName := runtime.FuncForPC(pc).Name()
 	additional_info := fmt.Sprintf(message, a...)
 
 	log.Printf(
-		"%s== ERROR ==%s --FUNCTION--: %s --MESSAGE-- : %s%s\n",
-		redColor, resetColor, functionName, additional_info, resetColor,
-	)
+		"%s== ERROR == %s --FILE--:%s --FUNCTION--: %s --LINE--: %v --MESSAGE-- : %s%s\n",
+		redColor, resetColor, file, functionName, line, additional_info, resetColor)
 }
 func (printer) Info(message string, a ...interface{}) {
-	pc, _, _, _ := runtime.Caller(1)
+	pc, file, line, _ := runtime.Caller(1)
 	functionName := runtime.FuncForPC(pc).Name()
 	additional_info := fmt.Sprintf(message, a...)
 
-	log.Printf("%s== INFO ==%s --FUNCTION--: %s --MESSAGE-- : %s%s\n",
-		yellowColor, resetColor, functionName, additional_info, resetColor)
+	log.Printf(
+		"%s== INFO == %s --FILE--:%s --FUNCTION--: %s --LINE--: %v --MESSAGE-- : %s%s\n",
+		redColor, resetColor, file, functionName, line, additional_info, resetColor)
 }
