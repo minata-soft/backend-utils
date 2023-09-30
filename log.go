@@ -22,8 +22,9 @@ func (printer) Debug(message string, a ...interface{}) {
 	functionName := runtime.FuncForPC(pc).Name()
 	additional_info := fmt.Sprintf(message, a...)
 
-	log.Printf(" --FILE--:%s %s== DEBUG ==%s --FUNCTION--: %s --LINE--: %v --MESSAGE-- : %s%s\n",
-		file, blueColor, resetColor, functionName, line, additional_info, resetColor)
+	log.Printf(
+		"%s== DEBUG == %s --FILE--:%s --FUNCTION--: %s --LINE--: %v --MESSAGE-- : %s%s\n",
+		blueColor, resetColor, file, functionName, line, additional_info, resetColor)
 }
 
 func (printer) Error(message string, a ...interface{}) {
@@ -42,5 +43,5 @@ func (printer) Info(message string, a ...interface{}) {
 
 	log.Printf(
 		"%s== INFO == %s --FILE--:%s --FUNCTION--: %s --LINE--: %v --MESSAGE-- : %s%s\n",
-		redColor, resetColor, file, functionName, line, additional_info, resetColor)
+		yellowColor, resetColor, file, functionName, line, additional_info, resetColor)
 }
