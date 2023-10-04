@@ -1,13 +1,35 @@
 package image_test
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/minata-soft/backend-utils/image"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"syreclabs.com/go/faker"
 )
+
+type TestStruct struct {
+	img image.Image
+}
+
+func setup(t *testing.T) *TestStruct {
+	img := image.NewImageStorage(&image.ImageMinio{})
+	require.NotNil(t, img)
+
+	err := img.Connect(image.Config{
+		Endpoint:        "127.0.0.1:9000",
+		AccessKeyID:     "minio_access_key",
+		SecretAccessKey: "minio_secret_key",
+		UseSSL:          false,
+	})
+	require.Nil(t, err)
+
+	return &TestStruct{img}
+}
 
 func TestMinioNewServer(t *testing.T) {
 	img := image.NewImageStorage(&image.ImageMinio{})
@@ -68,5 +90,68 @@ func TestConnect(t *testing.T) {
 		}
 
 	})
+
+}
+
+func TestCreateBucket(t *testing.T) {
+	var (
+		test_utils         = setup(t)
+		name_bucket string = strings.ToLower(faker.RandomString(6))
+	)
+
+	fmt.Printf("name_bucket %s\n", name_bucket)
+
+	err := test_utils.img.BucketCreate(name_bucket)
+	assert.Nil(t, err, image.ErrBucketCreate)
+
+}
+
+func TestBucketExist(t *testing.T) {
+	var (
+		test_utils         = setup(t)
+		name_bucket string = strings.ToLower(faker.RandomString(6))
+	)
+
+	err := test_utils.img.BucketCreate(name_bucket)
+	assert.Nil(t, err, image.ErrBucketCreate)
+
+	b, err := test_utils.img.BucketExist(name_bucket)
+	assert.Nil(t, err, image.ErrBucketCreate)
+	assert.True(t, b)
+}
+
+func TestDeleteBucket(t *testing.T) {
+	var (
+		test_utils         = setup(t)
+		name_bucket string = strings.ToLower(faker.RandomString(6))
+	)
+
+	err := test_utils.img.BucketCreate(name_bucket)
+	assert.Nil(t, err, image.ErrBucketCreate)
+
+	b, err := test_utils.img.BucketExist(name_bucket)
+	assert.Nil(t, err, image.ErrBucketCreate)
+	assert.True(t, b)
+
+	err = test_utils.img.BucketDelete(name_bucket)
+	assert.Nil(t, err, image.ErrBucketCreate)
+
+}
+
+func TestUploadImage(t *testing.T) {
+	var (
+		test_utils         = setup(t)
+		name_bucket string = strings.ToLower(faker.RandomString(6))
+	)
+
+	err := test_utils.img.BucketCreate(name_bucket)
+	assert.Nil(t, err, image.ErrBucketCreate)
+
+	b, err := test_utils.img.BucketExist(name_bucket)
+	assert.Nil(t, err, image.ErrBucketCreate)
+	assert.True(t, b)
+
+	err = test_utils.img.BucketDelete(name_bucket)
+	assert.Nil(t, err, image.ErrBucketCreate)
 
 }
