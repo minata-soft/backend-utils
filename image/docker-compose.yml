@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./data:/data
+    environment:
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+    command: server /data
+
+  minio-ui:
+    image: minio/mc
+    ports:
+      - "9001:9000"
+    environment:
+      MINIO_BROWSER: "on"
+    command: ["mc", "web", "minio"]
