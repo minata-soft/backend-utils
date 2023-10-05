@@ -2,9 +2,12 @@ package image
 
 import (
 	"context"
+	"errors"
+	"log"
 	"mime/multipart"
 
-	"github.com/minio/minio-go"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 type ImageMinio struct {
@@ -51,49 +54,84 @@ func WithBucket(bucket string) func(*ImageMinio) {
 	}
 }
 
-func (img *ImageMinio) Connect(config Config) error {
-	client, err := minio.New(config.Endpoint, config.AccessKeyID, config.SecretAccessKey, config.UseSSL)
+func (img *ImageMinio) Connect(config Config) (Image, error) {
+	client, err := minio.New(config.Endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(config.AccessKeyID, config.SecretAccessKey, ""),
+		Secure: config.UseSSL,
+	})
 	if err != nil {
-		return err
+		return img, err
 	}
 	img.Client = client
 	img.Ctx = context.Background()
-	return err
+	return img, err
 }
 
-func (img *ImageMinio) Init() error {
-	err := img.Connect(Config{})
+func (m *ImageMinio) UploadImage(objectName string, file *multipart.FileHeader, bucket_name string) error {
+	var (
+		info        minio.UploadInfo
+		buffer, err = file.Open()
+		fileBuffer  = buffer
+		contentType = file.Header["Content-Type"][0]
+		fileSize    = file.Size
+	)
 	if err != nil {
-		return err
+		return errors.New("Fail to open file :" + err.Error())
 	}
-	exists, err := img.BucketExist(img.Bucket)
-	if err != nil {
-		return err
+
+	// Upload the zip file with PutObject
+	if info, err = m.Client.PutObject(m.Ctx, bucket_name, objectName, fileBuffer, fileSize, minio.PutObjectOptions{ContentType: contentType}); err != nil {
+		return errors.New("Fail to upload file :" + err.Error())
 	}
-	if !exists {
-		err = img.CreateBucket()
-		if err != nil {
-			return err
-		}
-	}
+
+	log.Printf("Successfully uploaded %s of size %d\n", objectName, info.Size)
+
 	return nil
 }
 
-func (img *ImageMinio) UploadImage(objectName string, file *multipart.FileHeader, bucket_name string) error {
-	panic("unimplemented")
+func (img *ImageMinio) BucketCreate(bucket_name string) error {
+	err := img.Client.MakeBucket(img.Ctx, bucket_name, minio.MakeBucketOptions{})
+	if err != nil {
+		return errors.New(ErrBucketCreate + " err: " + err.Error())
+	}
+
+	return err
 }
 
-func (img *ImageMinio) CreateBucket() error {
-	// implementation
-	panic("unimplemented")
-}
+func (img *ImageMinio) BucketDelete(bucket_name string) error {
+	err := img.Client.RemoveBucket(img.Ctx, bucket_name)
+	if err != nil {
+		return errors.New(ErrBucketDelete + " err: " + err.Error())
+	}
 
-func (img *ImageMinio) DeleteBucket(bucket_name string) error {
-	// implementation
-	panic("unimplemented")
+	return err
 }
 
 func (img *ImageMinio) BucketExist(bucket_name string) (bool, error) {
-	// implementation
-	panic("unimplemented")
+	found, err := img.Client.BucketExists(context.Background(), bucket_name)
+	if err != nil {
+		return false, errors.New(ErrBucketCheck + " err: " + err.Error())
+	}
+
+	return found, err
+}
+
+func (img *ImageMinio) EnsureBucketExist(bucket_names []string) error {
+	var (
+		err   error
+		exist bool
+	)
+
+	for _, v := range bucket_names {
+		if exist, err = img.BucketExist(v); err != nil {
+			return errors.New("an error occurs when checking the bucket " + err.Error())
+		}
+		if !exist {
+			if err = img.Client.MakeBucket(img.Ctx, v, minio.MakeBucketOptions{}); err != nil {
+				return errors.New("Fail to create bucket " + err.Error())
+			}
+		}
+
+	}
+	return nil
 }

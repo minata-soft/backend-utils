@@ -1,21 +1,20 @@
 version: '3'
 
 services:
-  minio:
-    image: minio/minio
-    ports:
-      - "9000:9000"
-    volumes:
-      - ./data:/data
-    environment:
-      MINIO_ACCESS_KEY: minio_access_key
-      MINIO_SECRET_KEY: minio_secret_key
-    command: server /data
+     minio:
+          container_name: "minio"
+          image: minio/minio
+          # restart: always
+          environment:
+               - MINIO_ENDPOINT=9000
+               - MINIO_ROOT_USER=minio_access_key
+               - MINIO_ROOT_PASSWORD=minio_secret_key
+          ports:
+               - 9000:9000
+               - 9090:9090
+          volumes:
+               - ./data/:/data
+          command: server /data --console-address ":9090"
+          expose:
+             - 9000
 
-  minio-ui:
-    image: minio/mc
-    ports:
-      - "9001:9000"
-    environment:
-      MINIO_BROWSER: "on"
-    command: ["mc", "web", "minio"]

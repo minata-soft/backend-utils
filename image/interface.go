@@ -3,12 +3,12 @@ package image
 import "mime/multipart"
 
 type Image interface {
-	Connect(Config) error
-	Init() error
+	Connect(Config) (Image, error)
 	UploadImage(objectName string, file *multipart.FileHeader, bucket_name string) error
-	CreateBucket() error
-	DeleteBucket(bucket_name string) error
+	BucketCreate(name_bucket string) error
+	BucketDelete(bucket_name string) error
 	BucketExist(bucket_name string) (bool, error)
+	EnsureBucketExist(bucket_names []string) error
 }
 
 type Config struct {
