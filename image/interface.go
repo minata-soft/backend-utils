@@ -8,6 +8,7 @@ type Image interface {
 	BucketCreate(name_bucket string) error
 	BucketDelete(bucket_name string) error
 	BucketExist(bucket_name string) (bool, error)
+	EnsureBucketExist(bucket_names []string) error
 }
 
 type Config struct {

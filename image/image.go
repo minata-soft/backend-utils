@@ -115,3 +115,23 @@ func (img *ImageMinio) BucketExist(bucket_name string) (bool, error) {
 
 	return found, err
 }
+
+func (img *ImageMinio) EnsureBucketExist(bucket_names []string) error {
+	var (
+		err   error
+		exist bool
+	)
+
+	for _, v := range bucket_names {
+		if exist, err = img.BucketExist(v); err != nil {
+			return errors.New("an error occurs when checking the bucket " + err.Error())
+		}
+		if !exist {
+			if err = img.Client.MakeBucket(img.Ctx, v, minio.MakeBucketOptions{}); err != nil {
+				return errors.New("Fail to create bucket " + err.Error())
+			}
+		}
+
+	}
+	return nil
+}
