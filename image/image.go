@@ -11,47 +11,12 @@ import (
 )
 
 type ImageMinio struct {
-	Endpoint        string
-	AccessKeyID     string
-	SecretAccessKey string
-	UseSSL          bool
-	Ctx             context.Context
-	Client          *minio.Client
-	Bucket          string
+	Ctx    context.Context
+	Client *minio.Client
 }
 
-func NewImageStorage(img Image, options ...func(*ImageMinio)) Image {
+func NewImageStorage(img Image) Image {
 	return img
-}
-
-func WithEndpoint(endpoint string) func(*ImageMinio) {
-	return func(img *ImageMinio) {
-		img.Endpoint = endpoint
-	}
-}
-
-func WithAccessKeyID(accessKeyID string) func(*ImageMinio) {
-	return func(img *ImageMinio) {
-		img.AccessKeyID = accessKeyID
-	}
-}
-
-func WithSecretAccessKey(secretAccessKey string) func(*ImageMinio) {
-	return func(img *ImageMinio) {
-		img.SecretAccessKey = secretAccessKey
-	}
-}
-
-func WithUseSSL(useSSL bool) func(*ImageMinio) {
-	return func(img *ImageMinio) {
-		img.UseSSL = useSSL
-	}
-}
-
-func WithBucket(bucket string) func(*ImageMinio) {
-	return func(img *ImageMinio) {
-		img.Bucket = bucket
-	}
 }
 
 func (img *ImageMinio) Connect(config Config) (Image, error) {
