@@ -54,17 +54,17 @@ func WithBucket(bucket string) func(*ImageMinio) {
 	}
 }
 
-func (img *ImageMinio) Connect(config Config) error {
+func (img *ImageMinio) Connect(config Config) (Image, error) {
 	client, err := minio.New(config.Endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(config.AccessKeyID, config.SecretAccessKey, ""),
 		Secure: config.UseSSL,
 	})
 	if err != nil {
-		return err
+		return img, err
 	}
 	img.Client = client
 	img.Ctx = context.Background()
-	return err
+	return img, err
 }
 
 func (m *ImageMinio) UploadImage(objectName string, file *multipart.FileHeader, bucket_name string) error {

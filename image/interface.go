@@ -3,7 +3,7 @@ package image
 import "mime/multipart"
 
 type Image interface {
-	Connect(Config) error
+	Connect(Config) (Image, error)
 	UploadImage(objectName string, file *multipart.FileHeader, bucket_name string) error
 	BucketCreate(name_bucket string) error
 	BucketDelete(bucket_name string) error
