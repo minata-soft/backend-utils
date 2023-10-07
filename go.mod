@@ -2,9 +2,13 @@ module github.com/minata-soft/backend-utils
 
 go 1.20
 
-require github.com/minio/minio-go v6.0.14+incompatible
+require (
+	github.com/aws/aws-sdk-go-v2 v1.21.1
+	github.com/minio/minio-go v6.0.14+incompatible
+)
 
 require (
+	github.com/aws/smithy-go v1.15.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/uuid v1.3.1 // indirect

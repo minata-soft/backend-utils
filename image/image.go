@@ -3,9 +3,12 @@ package image
 import (
 	"context"
 	"errors"
+	"fmt"
+	"io"
 	"log"
 	"mime/multipart"
 
+	backend_utils "github.com/minata-soft/backend-utils"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -30,6 +33,25 @@ func (img *ImageMinio) Connect(config Config) (Image, error) {
 	img.Client = client
 	img.Ctx = context.Background()
 	return img, err
+}
+
+func (m *ImageMinio) GetImage(objectName string, bucket_name string) ([]byte, error) {
+	obj, err := m.Client.GetObject(m.Ctx, bucket_name, objectName, minio.GetObjectOptions{})
+	if err != nil {
+
+	}
+	defer obj.Close()
+
+	// Read the object's content
+	data, err := io.ReadAll(obj)
+	if err != nil {
+		fmt.Println(err)
+		backend_utils.Debug.Error("error while reading the object: %v", err)
+		return []byte{}, err
+	}
+
+	return data, nil
+
 }
 
 func (m *ImageMinio) UploadImage(objectName string, file *multipart.FileHeader, bucket_name string) error {
