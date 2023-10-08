@@ -122,3 +122,7 @@ func (img *ImageMinio) EnsureBucketExist(bucket_names []string) error {
 	}
 	return nil
 }
+
+func (img *ImageMinio) ObjectDelete(bucket_name string, object_name string) (err error) {
+	return img.Client.RemoveObject(img.Ctx, bucket_name, object_name, minio.RemoveObjectOptions{})
+}
