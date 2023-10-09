@@ -54,6 +54,15 @@ func (m *ImageMinio) GetImage(objectName string, bucket_name string) ([]byte, er
 
 }
 
+func (m *ImageMinio) ObjectGet(bucket_name string, object_name string) (*minio.Object, error) {
+	obj, err := m.Client.GetObject(m.Ctx, bucket_name, object_name, minio.GetObjectOptions{})
+	if err != nil {
+
+	}
+
+	return obj, nil
+}
+
 func (m *ImageMinio) UploadImage(objectName string, file *multipart.FileHeader, bucket_name string) error {
 	var (
 		info        minio.UploadInfo
