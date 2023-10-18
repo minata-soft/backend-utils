@@ -7,6 +7,8 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
+	"net/url"
+	"time"
 
 	backend_utils "github.com/minata-soft/backend-utils"
 	"github.com/minio/minio-go/v7"
@@ -134,4 +136,19 @@ func (img *ImageMinio) EnsureBucketExist(bucket_names []string) error {
 
 func (img *ImageMinio) ObjectDelete(bucket_name string, object_name string) (err error) {
 	return img.Client.RemoveObject(img.Ctx, bucket_name, object_name, minio.RemoveObjectOptions{})
+}
+
+func (img *ImageMinio) ObjectURL(bucket_name string, object_name string) (*url.URL, error) {
+	// Set request parameters for content-disposition.
+	reqParams := make(url.Values)
+	reqParams.Set("response-content-disposition", "attachment; filename=\"your-filename.txt\"")
+
+	// Generates a presigned url which expires in a day.
+	presignedURL, err := img.Client.PresignedGetObject(context.Background(), bucket_name, object_name, time.Second*24*60*60, reqParams)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	fmt.Println("Successfully generated presigned URL", presignedURL)
+	return presignedURL, nil
 }
