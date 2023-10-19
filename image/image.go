@@ -66,7 +66,6 @@ func (m *ImageMinio) ObjectGet(bucket_name string, object_name string) (*minio.O
 
 func (m *ImageMinio) UploadImage(objectName string, file *multipart.FileHeader, bucket_name string) error {
 	var (
-		info        minio.UploadInfo
 		buffer, err = file.Open()
 		fileBuffer  = buffer
 		contentType = file.Header["Content-Type"][0]
@@ -77,7 +76,7 @@ func (m *ImageMinio) UploadImage(objectName string, file *multipart.FileHeader, 
 	}
 
 	// Upload the zip file with PutObject
-	if info, err = m.Client.PutObject(m.Ctx, bucket_name, objectName, fileBuffer, fileSize, minio.PutObjectOptions{ContentType: contentType}); err != nil {
+	if _, err = m.Client.PutObject(m.Ctx, bucket_name, objectName, fileBuffer, fileSize, minio.PutObjectOptions{ContentType: contentType}); err != nil {
 		return errors.New("Fail to upload file :" + err.Error())
 	}
 
