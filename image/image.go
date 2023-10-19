@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/url"
 	"time"
@@ -82,8 +81,6 @@ func (m *ImageMinio) UploadImage(objectName string, file *multipart.FileHeader, 
 		return errors.New("Fail to upload file :" + err.Error())
 	}
 
-	log.Printf("Successfully uploaded %s of size %d\n", objectName, info.Size)
-
 	return nil
 }
 
@@ -141,7 +138,7 @@ func (img *ImageMinio) ObjectDelete(bucket_name string, object_name string) (err
 func (img *ImageMinio) ObjectURL(bucket_name string, object_name string) (*url.URL, error) {
 	// Set request parameters for content-disposition.
 	reqParams := make(url.Values)
-	reqParams.Set("response-content-disposition", "attachment; filename=\"your-filename.txt\"")
+	reqParams.Set("response-content-disposition", "attachment; filename="+object_name)
 
 	// Generates a presigned url which expires in a day.
 	presignedURL, err := img.Client.PresignedGetObject(context.Background(), bucket_name, object_name, time.Second*24*60*60, reqParams)
@@ -149,6 +146,6 @@ func (img *ImageMinio) ObjectURL(bucket_name string, object_name string) (*url.U
 		fmt.Println(err)
 		return nil, err
 	}
-	fmt.Println("Successfully generated presigned URL", presignedURL)
+
 	return presignedURL, nil
 }
