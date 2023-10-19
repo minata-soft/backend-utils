@@ -134,16 +134,16 @@ func (img *ImageMinio) ObjectDelete(bucket_name string, object_name string) (err
 	return img.Client.RemoveObject(img.Ctx, bucket_name, object_name, minio.RemoveObjectOptions{})
 }
 
-func (img *ImageMinio) ObjectURL(bucket_name string, object_name string) (string, error) {
+func (img *ImageMinio) ObjectURL(bucket_name string, object_name string) (*string, error) {
 	reqParams := make(url.Values)
 	reqParams.Set("response-content-disposition", "attachment; filename="+object_name)
 
 	presignedURL, err := img.Client.PresignedGetObject(context.Background(), bucket_name, object_name, time.Second*24*60*60, reqParams)
 	if err != nil {
 		fmt.Println(err)
-		return "", err
+		return nil, err
 	}
 	tmpString := fmt.Sprintf("%s", presignedURL.String())
 
-	return tmpString, nil
+	return &tmpString, nil
 }
