@@ -146,5 +146,7 @@ func (img *ImageMinio) ObjectURL(bucket_name string, object_name string) (*url.U
 		return nil, err
 	}
 
+	backend_utils.Debug.Info(" presignedURL %v", presignedURL.String())
+
 	return presignedURL, nil
 }
