@@ -134,19 +134,15 @@ func (img *ImageMinio) ObjectDelete(bucket_name string, object_name string) (err
 	return img.Client.RemoveObject(img.Ctx, bucket_name, object_name, minio.RemoveObjectOptions{})
 }
 
-func (img *ImageMinio) ObjectURL(bucket_name string, object_name string) (*url.URL, error) {
-	// Set request parameters for content-disposition.
+func (img *ImageMinio) ObjectURL(bucket_name string, object_name string) (string, error) {
 	reqParams := make(url.Values)
 	reqParams.Set("response-content-disposition", "attachment; filename="+object_name)
 
-	// Generates a presigned url which expires in a day.
 	presignedURL, err := img.Client.PresignedGetObject(context.Background(), bucket_name, object_name, time.Second*24*60*60, reqParams)
 	if err != nil {
 		fmt.Println(err)
-		return nil, err
+		return "", err
 	}
 
-	backend_utils.Debug.Info(" presignedURL %v", presignedURL.String())
-
-	return presignedURL, nil
+	return presignedURL.String(), nil
 }
