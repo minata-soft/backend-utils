@@ -143,7 +143,7 @@ func (img *ImageMinio) ObjectURL(bucket_name string, object_name string) (string
 		fmt.Println(err)
 		return "", err
 	}
-	tmpString := fmt.Sprintf("%v", presignedURL.String())
+	tmpString := fmt.Sprintf("%s", presignedURL.String())
 
 	return tmpString, nil
 }
