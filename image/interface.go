@@ -12,7 +12,7 @@ type Image interface {
 	GetImage(objectName string, bucket_name string) ([]byte, error)
 	ObjectDelete(bucket_name string, object_name string) error
 	ObjectGet(bucket_name string, object_name string) (*minio.Object, error)
-	ObjectURL(bucket_name string, object_name string) (string, error)
+	ObjectURL(bucket_name string, object_name string) (*string, error)
 	BucketCreate(name_bucket string) error
 	BucketDelete(bucket_name string) error
 	BucketExist(bucket_name string) (bool, error)
