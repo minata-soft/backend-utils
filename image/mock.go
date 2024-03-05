@@ -9,27 +9,32 @@ type MockImage struct {
 	UploadErr error
 }
 
-func (m *MockImage) Connect() error {
-	m.Connected = true
+// BucketCreate implements Image.
+func (*MockImage) BucketCreate(name_bucket string) error {
 	return nil
 }
 
-func (m *MockImage) Init() error {
-	return m.InitError
-}
-
-func (m *MockImage) UploadImage(objectName string, file *multipart.FileHeader, bucket_name string) error {
-	return m.UploadErr
-}
-
-func (m *MockImage) CreateBucket() error {
+// BucketDelete implements Image.
+func (*MockImage) BucketDelete(bucket_name string) error {
 	return nil
 }
 
-func (m *MockImage) DeleteBucket(bucket_name string) error {
+// BucketExist implements Image.
+func (*MockImage) BucketExist(bucket_name string) (bool, error) {
+	return true, nil
+}
+
+// Connect implements Image.
+func (*MockImage) Connect(Config) (Image, error) {
+	return &MockImage{Connected: true}, nil
+}
+
+// EnsureBucketExist implements Image.
+func (*MockImage) EnsureBucketExist(bucket_names []string) error {
 	return nil
 }
 
-func (m *MockImage) BucketExist(bucket_name string) (bool, error) {
-	return m.Bucket == bucket_name, nil
+// UploadImage implements Image.
+func (*MockImage) UploadImage(objectName string, file *multipart.FileHeader, bucket_name string) error {
+	return nil
 }
